@@ -1,0 +1,17 @@
+alias,canonical_label,notes
+Management Fee,Management Fee - ESMI (5100),Common shorthand without company name
+Mgmt Fee,Management Fee - ESMI (5100),Common shorthand
+Mgmt. Fee,Management Fee - ESMI (5100),Common shorthand with period
+ESMI Management Fee,Management Fee - ESMI (5100),Alternative label ordering
+Property Insurance,Property & Casualty Insurance (5785),Common shorthand
+P&C Insurance,Property & Casualty Insurance (5785),Industry abbreviation
+General Liability Insurance,Property & Casualty Insurance (5785),Alternative insurance label
+Bank Fees,Bank Charges (5430),Common alternative label
+Credit Card Fees,Credit Card Merchant Fees (5435),Common shorthand
+CC Processing,Credit Card Merchant Fees (5435),Common abbreviation
+Web Marketing,Internet & Call Center (5220),Common digital marketing label
+Online Marketing,Internet & Call Center (5220),Common digital marketing label
+Software Subscriptions,Computer (5550),Common alternative for software costs
+Rental Income,Rental Income (4000),Label without GL code suffix
+Late Fee Income,Late Fees (4300),Target-side COA label used as source label
+Admin Fee Income,Administrative Fees (4310),Target-side COA label used as source label

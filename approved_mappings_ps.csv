@@ -1,0 +1,27 @@
+source_label,coa,coa2,account_type,notes
+Rental Income,Rental Income,Net Rental Income,Income,Core storage unit rental revenue
+Tenant Insurance RMASA Fee,Current Tenant Protection Split,,Income,Tenant protection plan revenue split
+Merchandise Sales,Retail Sales Income,,Income,Merchandise and retail supply sales
+"Admin Fees, Late Fees, and Other Fees",Admin Fee Income,,Income,Combined admin/late/other fees — PS reports as one line
+Total Revenue,Total Operating Income,Total Operating Income,PS_Rollup,PS total revenue subtotal — do not aggregate in model
+Property Management Software,Software,,Expense,Property management software subscription
+Customer Care Center,Software,,Expense,National call center and customer care costs
+Management Fees,Current Mgmt. Fee,,Expense,Third-party management fee paid to PS
+Total Contractually set fees,,,PS_Rollup,PS contractually set fees subtotal — do not aggregate in model
+Cost of Goods Sold,Retail Products,,Expense,Cost of retail merchandise sold
+Payroll - Property Manager,Payroll,,Expense,Site property manager payroll
+Payroll - District Manager,Current Mgmt. Fee,,Expense,District manager payroll allocated to property — mapped to mgmt fee per COA Translation
+Utilities,Utilities,,Expense,All utility costs combined
+Repairs and Maintenance,Repairs & Maintenance,,Expense,General facility repairs and maintenance
+Credit Card Charges,Current Credit Card Security Fees,,Expense,Credit and debit card processing costs
+Internet Advertising,Advertising & Marketing,,Expense,Digital and internet advertising spend
+Network Charges,Software,,Expense,Network infrastructure charges — mapped to software per COA Translation
+Bank Charges,Software,,Expense,Bank service charges — mapped to software per COA Translation
+Telephone,Telephone & Internet,,Expense,Phone and internet service for the property
+Tenant Mailings,Payroll,,Expense,Tenant mailing costs — mapped to payroll per COA Translation
+Office Expense,Office Supplies,,Expense,Office supplies and general administrative costs
+Business Licenses and Permits,Licenses & Permits,,Expense,Business licenses and operational taxes
+Legal and Evictions,Prof Fees - Legal/Acctg,,Expense,Legal fees and eviction costs
+Total Other Expenses,,,PS_Rollup,PS other expenses subtotal — do not aggregate in model
+Total Operating Expenses,Total Operating Expense,Total Operating Expense,PS_Rollup,PS total operating expense rollup — do not aggregate in model
+Net Operating Income,Net Operating Income,Net Operating Income,PS_Rollup,PS calculated NOI — do not aggregate in model

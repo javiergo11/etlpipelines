@@ -1,0 +1,16 @@
+run_id,property_name,managed_by,source_file,sheet_name,status,message,extracted_at
+20260327_101230,ChattanoogaWebapptest,Extra Space Storage,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Rolling IS 7214,OK,Extracted 68 line items x 13 months,2026-03-27T10:12:30.781650
+20260327_101230,ChattanoogaWebapptest,Extra Space Storage,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Unit Rate 7214,OK,Extracted 4 metrics,2026-03-27T10:12:30.781650
+20260327_101230,ChattanoogaWebapptest,Extra Space Storage,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Ops Sum 7214,OK,Extracted 6 metrics x 15 months,2026-03-27T10:12:30.781650
+20260327_101230,ChattanoogaWebapptest,Extra Space Storage,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Rent Roll 7214,OK,Extracted 545 units x 10 columns,2026-03-27T10:12:30.781650
+20260327_101230,ChattanoogaWebapptest,Extra Space Storage,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,COA Mapper,OK,"COA mapping: 53 auto-accepted, 15 flagged for review",2026-03-27T10:12:30.781650
+20260327_104918,Chattanooga,Extra,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Rolling IS 7214,OK,Extracted 68 line items x 13 months,2026-03-27T10:49:18.140904
+20260327_104918,Chattanooga,Extra,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Unit Rate 7214,OK,Extracted 4 metrics,2026-03-27T10:49:18.140904
+20260327_104918,Chattanooga,Extra,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Ops Sum 7214,OK,Extracted 6 metrics x 15 months,2026-03-27T10:49:18.140904
+20260327_104918,Chattanooga,Extra,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,Rent Roll 7214,OK,Extracted 545 units x 10 columns,2026-03-27T10:49:18.140904
+20260327_104918,Chattanooga,Extra,Feb. 2026 Owner Financials - EXR Chattanooga.xlsx,COA Mapper,OK,"COA mapping: 53 auto-accepted, 15 flagged for review",2026-03-27T10:49:18.140904
+20260327_121158,Vacaville,Public Storage,VacavilleHistoricalsJan26.xlsx,IS,OK,Extracted 26 line items x 13 months,2026-03-27T12:11:58.374084
+20260327_121158,Vacaville,Public Storage,VacavilleHistoricalsJan26.xlsx,Rent Roll,WARNING,Could not count occupied units,2026-03-27T12:11:58.374084
+20260327_121158,Vacaville,Public Storage,VacavilleHistoricalsJan26.xlsx,Ops Sum,SKIP,Not available in Public Storage format,2026-03-27T12:11:58.374084
+20260327_121158,Vacaville,Public Storage,VacavilleHistoricalsJan26.xlsx,Rent Roll detail,SKIP,PS Rent Roll does not include rates or move-in dates,2026-03-27T12:11:58.374084
+20260327_121158,Vacaville,Public Storage,VacavilleHistoricalsJan26.xlsx,COA Mapper,OK,"COA mapping: 26 auto-accepted, 0 flagged for review",2026-03-27T12:11:58.374084

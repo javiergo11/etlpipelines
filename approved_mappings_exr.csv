@@ -1,0 +1,73 @@
+source_label,coa,coa2,account_type,notes
+Rental Income (4000),Rental Income,,Income,Core storage unit rental revenue
+Rental Refunds (4090),Rental Income,,Income,Contra-revenue — tenant refunds reduce gross rental income
+Discounts Charged (4250),Discounts,,Income,Move-in specials and promotional concessions
+Bad Debt Expense (4990),Bad Debt,,Income,Not in COA Translation — verify treatment in your model (may combine with Discounts)
+Administrative Fees (4310),Admin Fee Income,,Income,Gross admin fees charged to tenants
+Admin Fees Waived (4360),Admin Fee Income,,Income,Contra-account — offsets gross admin fees (4310)
+Late Fees (4300),Late Fee Income,,Income,Gross late fees charged to tenants
+Late Fees Waived (4350),Late Fee Income,,Income,Contra-account — offsets gross late fees (4300)
+Other Fees (4305),Other Tenant Income,,Income,Gross other miscellaneous fees charged to tenants
+Other Fees Waived (4355),Other Tenant Income,,Income,Contra-account — offsets gross other fees (4305)
+Merchandise Sales (4320),Retail Sales Income,,Income,Merchandise and retail supply sales
+Lock & Pack,Retail Sales Income,,Income,Lock and packing supply retail sales
+Other Income (4980),Other Tenant Income,,Income,Miscellaneous other operating income
+Rental Income - Parking (4020),Rental Income,,Income,Parking rental — combine with storage rental income per COA Translation
+Manager Payroll (5000),Payroll,,Expense,Site manager base payroll
+Overtime (5005),Payroll,,Expense,Manager and staff overtime pay
+Vacation & Personal Leave (5010),Payroll,,Expense,PTO and vacation pay accruals
+Performance Bonus (5030),Payroll,,Expense,Annual and periodic performance bonuses
+401K Match (5035),Payroll,,Expense,Employer 401K contribution
+Employee Incentives (5050),Payroll,,Expense,Employee incentive pay and spot bonuses
+Workmans Compensation (5070),Payroll,,Expense,Workers compensation insurance premiums
+Group Health & Life Insurance (5080),Payroll,,Expense,Employee health and life insurance benefits
+Payroll Tax (5090),Payroll,,Expense,Employer FICA/FUTA/SUTA payroll taxes
+Management Fee - ESMI (5100),Current Mgmt. Fee,,Expense,Third-party management fee paid to ESMI
+Other Advertising (5210),Advertising & Marketing,,Expense,Traditional and non-digital advertising spend
+Internet & Call Center (5220),Advertising & Marketing,,Expense,Digital marketing and national call center costs
+Electricity (5300),Utilities,,Expense,Electric utility — see also Utilities EXR subtotal
+Water & Sewer (5320),Utilities,,Expense,Water and sewer utility — see also Utilities EXR subtotal
+Office Supplies & Expense (5400),Office Supplies,,Expense,Office supplies and general administrative supplies
+Postage/Express Delivery (5410),Office Supplies,,Expense,Postage and express shipping costs
+Bank Charges (5430),Bank Charges,,Expense,Bank service charges and fees
+Credit Card Merchant Fees (5435),Current Payment Processing Fees,,Expense,Credit and debit card processing costs
+Legal & Professional (5440),Prof Fees - Legal/Acctg,,Expense,Legal and accounting professional fees
+"Operational Fees, Licenses & Taxes (5450)",Licenses & Permits,,Expense,Business licenses and operational taxes
+Recruiting (5460),Recruiting,,Expense,Job posting and recruiting expenses
+Employee Relations (5470),Other Expense,,Expense,Employee engagement and morale expenses
+Training (5475),Other Expense,,Expense,Employee training and certification costs
+Business Travel (5490),Other Expense,,Expense,Business travel and lodging costs
+Telecom (5500),Telephone & Internet,,Expense,Phone and internet service for the property
+Computer (5550),Software,,Expense,Software subscriptions and computer equipment costs
+Repairs & Maintenance (5600),Repairs & Maintenance,,Expense,General facility repairs and maintenance
+Lighting / Electrical (5605),Repairs & Maintenance,,Expense,Lighting and electrical system repairs
+Trash Removal (5610),Utilities,,Expense,Trash and waste removal — see also Utilities EXR subtotal
+Unit Doors (5615),Repairs & Maintenance,,Expense,Storage unit door repairs and replacements
+Landscaping Maintenance (5620),Repairs & Maintenance,,Expense,Grounds and landscaping maintenance
+Snow Removal (5630),Repairs & Maintenance,,Expense,Snow plowing and ice management
+Pest Control (5640),Repairs & Maintenance,,Expense,Pest prevention and extermination services
+Elevator Maintenance (5650),Repairs & Maintenance,,Expense,Elevator service contracts and repairs
+HVAC Repairs (5655),Repairs & Maintenance,,Expense,Heating and cooling system repairs
+Security System (5660),Security,,Expense,Security monitoring system and equipment costs
+Gate & Fence (5665),Repairs & Maintenance,,Expense,Gate access system and fence repairs
+Fire Prevention (5670),Fire Prevention,,Expense,Fire suppression system inspections and service
+Painting (5680),Repairs & Maintenance,,Expense,Interior and exterior painting and touch-up
+Auction (5700),Auction,,Expense,Lien sale and auction costs
+Auctioneer (5705),Other Expense,,Expense,Auctioneer fees for lien sales
+Resale Merchandise (5740),Retail Products,,Expense,Cost of retail merchandise and supplies sold
+Property & Casualty Insurance (5785),Insurance,,Expense,Property and casualty insurance premium
+NRI,Net Rental Income,Net Rental Income,EXR_Rollup,EXR net rental income subtotal — do not aggregate in model (detail lines captured separately)
+Admin Fees,Admin Fee Income,,EXR_Rollup,EXR net admin fees subtotal — do not aggregate in model (detail lines captured separately)
+Late Fees,Late Fee Income,,EXR_Rollup,EXR net late fees subtotal — do not aggregate in model (detail lines captured separately)
+Other Fees,Other Tenant Income,,EXR_Rollup,EXR net other fees subtotal — do not aggregate in model (detail lines captured separately)
+Revenue - Property,Total Operating Income,Total Operating Income,EXR_Rollup,EXR total revenue rollup — do not aggregate in model (individual income lines captured separately)
+Payroll,Payroll,,EXR_Rollup,EXR payroll subtotal (5000-5090) — do not aggregate in model
+Management Fees,Current Mgmt. Fee,,EXR_Rollup,EXR management fee subtotal — do not aggregate in model
+Marketing,Advertising & Marketing,,EXR_Rollup,EXR marketing subtotal (5210 + 5220) — do not aggregate in model
+Office & Employee,Office Supplies,,EXR_Rollup,EXR office and employee expense subtotal — do not aggregate in model
+Administrative,Other Expense,,EXR_Rollup,EXR broader administrative expense subtotal — do not aggregate in model
+R&M,Repairs & Maintenance,,EXR_Rollup,EXR R&M subtotal (5600-5680) — do not aggregate in model
+Utilities,Utilities,,EXR_Rollup,EXR utilities subtotal (5300 + 5320 + 5610) — do not aggregate in model
+Other,Other Expense,,EXR_Rollup,EXR miscellaneous expense subtotal — do not aggregate in model
+Expense - Property,Total Operating Expense,Total Operating Expense,EXR_Rollup,EXR total operating expense rollup — do not aggregate in model (individual expense lines captured separately)
+Net Operating Income,Net Operating Income,Net Operating Income,EXR_Rollup,EXR calculated NOI — do not aggregate in model (derived from income minus expenses)
