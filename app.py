@@ -29,7 +29,7 @@ from extractor_core import (
 # ---------------------------------------------------------------------------
 
 st.set_page_config(
-    page_title="EXR Owner Financials Extractor",
+    page_title="Owner Financials Extractor",
     page_icon="📊",
     layout="centered",
 )
@@ -39,7 +39,7 @@ st.set_page_config(
 # HEADER
 # ---------------------------------------------------------------------------
 
-st.title("📊 EXR Owner Financials Extractor")
+st.title("📊 Owner Financials Extractor")
 st.markdown(
     "Upload an owner financial workbook, enter a property name, "
     "and download the extracted datapack."
@@ -153,4 +153,4 @@ elif uploaded_file is not None and not property_name.strip():
 # ---------------------------------------------------------------------------
 
 st.divider()
-st.caption("EXR Owner Financials Extractor v3.0 — Streamlit Edition")
+st.caption("Owner Financials Extractor v3.0 — Streamlit Edition")
