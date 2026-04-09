@@ -36,7 +36,8 @@ _COA_AUTO_ACCEPT = 0.85
 
 
 # ---------------------------------------------------------------------------
-# CONFIGURATION  (edit these if your files use different label text)
+# CONFIGURATION — EXTRA SPACE (EXR)
+# (edit these if your EXR files use different label text)
 # ---------------------------------------------------------------------------
 
 # The EXR sheet names all start with a known prefix followed by a property number,
@@ -49,10 +50,12 @@ SHEET_PREFIXES = {
     "rent_roll":  "Rent Roll",
 }
 
-# The rolling IS extraction scans from the first row containing this label
+# The rolling IS extraction scans from the first row containing the start label
 # down to (and including) the row containing the stop label.
-ROLLING_IS_START_LABEL = "Rental Income"
-ROLLING_IS_STOP_LABEL  = "Net Operating Income"
+# EXR starts one row earlier at "Average Sq. Ft. Occupancy"; PS starts at "Rental Income".
+EXR_ROLLING_IS_START_LABEL = "Average Sq. Ft. Occupancy"
+ROLLING_IS_START_LABEL     = "Rental Income"
+ROLLING_IS_STOP_LABEL      = "Net Operating Income"
 
 # The Unit Rate sheet is scanned for any row whose label matches one of these.
 # Values are looked up in the cells immediately to the right of the label.
@@ -92,7 +95,7 @@ RENT_ROLL_HEADERS = [
 
 
 # ---------------------------------------------------------------------------
-# HELPER FUNCTIONS
+# HELPER FUNCTIONS — SHARED (all formats)
 # ---------------------------------------------------------------------------
 
 def clean_label(text):
@@ -205,7 +208,7 @@ def parse_date_string(date_str):
 
 
 # ---------------------------------------------------------------------------
-# EXTRACTION FUNCTIONS
+# EXTRACTION FUNCTIONS — EXTRA SPACE (EXR)
 # ---------------------------------------------------------------------------
 
 def extract_rolling_is(ws):
@@ -262,9 +265,9 @@ def extract_rolling_is(ws):
         return None, None
 
     # -----------------------------------------------------------------------
-    # Step 2: Find the label column and the "Rental Income" start row.
+    # Step 2: Find the label column and the "Average Sq. Ft. Occupancy" start row.
     # We scan up to 30 rows below the date header looking for the first cell
-    # in the leftmost 5 columns that starts with ROLLING_IS_START_LABEL.
+    # in the leftmost 5 columns that starts with EXR_ROLLING_IS_START_LABEL.
     # This tells us both which column holds account labels and where data begins.
     # -----------------------------------------------------------------------
     label_col = None
@@ -272,7 +275,7 @@ def extract_rolling_is(ws):
     for idx in range(date_row_idx + 1, min(date_row_idx + 30, len(all_rows))):
         row = all_rows[idx]
         for col_idx in range(min(5, len(row))):
-            if label_matches(row[col_idx], ROLLING_IS_START_LABEL):
+            if label_matches(row[col_idx], EXR_ROLLING_IS_START_LABEL):
                 label_col     = col_idx
                 start_row_idx = idx
                 break
@@ -506,7 +509,7 @@ def extract_rent_roll(ws):
 
 
 # ---------------------------------------------------------------------------
-# PUBLIC STORAGE EXTRACTION
+# EXTRACTION FUNCTIONS — PUBLIC STORAGE (PS)
 # ---------------------------------------------------------------------------
 
 # Section header rows in the PS IS sheet that are labels only — no data values.
@@ -672,11 +675,14 @@ def extract_ps_rent_roll_occupancy(ws):
 
 
 # ---------------------------------------------------------------------------
-# CORE PROCESSING FUNCTION
+# CORE PROCESSING FUNCTION — ROUTES BY MANAGED_BY
 #
 # This is the main function that both the CLI script and the webapp call.
 # It takes a filepath and property_name, returns (output_bytes, filename, log).
 # It does NOT print anything or prompt for input.
+# Branches: "Public Storage" → PS extractors, else → EXR extractors.
+# CubeSmart: stub — not yet implemented (falls through to EXR branch).
+# Other: uses EXR extraction, skips COA mapping.
 # ---------------------------------------------------------------------------
 
 def process_workbook(filepath, property_name, managed_by="Extra"):
@@ -717,7 +723,7 @@ def process_workbook(filepath, property_name, managed_by="Extra"):
 
     if managed_by == "Public Storage":
         # ---------------------------------------------------------------
-        # PUBLIC STORAGE branch — IS sheet + Rent Roll occupancy count
+        # PUBLIC STORAGE (PS) branch — IS sheet + Rent Roll occupancy count
         # ---------------------------------------------------------------
 
         # Rolling IS — sheet named "IS"
@@ -768,7 +774,8 @@ def process_workbook(filepath, property_name, managed_by="Extra"):
 
     else:
         # ---------------------------------------------------------------
-        # EXTRA SPACE (and future managers) — current EXR logic unchanged
+        # EXTRA SPACE (EXR) branch (also used by CubeSmart / Other until
+        # those formats get their own extraction logic)
         # ---------------------------------------------------------------
 
         # Rolling IS
@@ -784,7 +791,7 @@ def process_workbook(filepath, property_name, managed_by="Extra"):
                              "message": "Could not find date header row"})
             elif rows is None:
                 log.append({"sheet": sheet_name, "status": "WARNING",
-                             "message": f"Could not find '{ROLLING_IS_START_LABEL}' label"})
+                             "message": f"Could not find '{EXR_ROLLING_IS_START_LABEL}' label"})
             else:
                 rolling_is_data = {"prop_num": prop_num, "dates": dates, "rows": rows}
                 msg = f"Extracted {len(rows)} line items x {len(dates)} months"
@@ -957,7 +964,7 @@ def process_workbook(filepath, property_name, managed_by="Extra"):
 
 
 # ---------------------------------------------------------------------------
-# EXCEL OUTPUT WRITERS
+# EXCEL OUTPUT WRITERS — SHARED (all formats)
 # ---------------------------------------------------------------------------
 
 HEADER_FONT = Font(bold=True)
@@ -972,7 +979,7 @@ FILL_YELLOW = PatternFill("solid", fgColor="FFEB9C")  # needs review, suggestion
 FILL_RED    = PatternFill("solid", fgColor="FFC7CE")  # no mapping found
 
 # ---------------------------------------------------------------------------
-# MANAGED BY — controlled list of supported management companies
+# MANAGED BY — ALL FORMATS (Extra, Public Storage, CubeSmart, Other)
 # ---------------------------------------------------------------------------
 
 MANAGED_BY_OPTIONS = [
@@ -995,7 +1002,7 @@ COA_FILES = {
 
 
 # ---------------------------------------------------------------------------
-# COA MAPPING OUTPUT WRITERS
+# COA MAPPING OUTPUT WRITERS — SHARED (all formats)
 # ---------------------------------------------------------------------------
 
 def write_coa_mapping_tab(out_wb, mapping_results):
