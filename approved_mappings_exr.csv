@@ -1,4 +1,5 @@
 source_label,coa,coa2,account_type,notes
+Average Sq. Ft. Occupancy (9992),Occupancy SqFt,,Income,Average square footage occupancy metric — precedes income statement rows
 Rental Income (4000),Rental Income,,Income,Core storage unit rental revenue
 Rental Refunds (4090),Rental Income,,Income,Contra-revenue — tenant refunds reduce gross rental income
 Discounts Charged (4250),Discounts,,Income,Move-in specials and promotional concessions
