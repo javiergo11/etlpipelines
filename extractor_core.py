@@ -111,7 +111,7 @@ def label_matches(cell_text, target):
 
 
 def is_date_value(value):
-    """Check if a value is a date (datetime, 'Mon YYYY', or 'Mon-YYYY' string)."""
+    """Check if a value is a date (datetime, 'Mon YYYY', 'Mon-YYYY', or 'Mon-YY' string)."""
     if isinstance(value, datetime):
         return True
     if isinstance(value, str):
@@ -121,16 +121,24 @@ def is_date_value(value):
         # PS format: "Feb-2025"
         if re.match(r"[A-Z][a-z]{2}-\d{4}", value):
             return True
+        # CS format: "Feb-26" (2-digit year)
+        if re.match(r"[A-Z][a-z]{2}-\d{2}$", value):
+            return True
     return False
 
 
 def format_date(value):
-    """Convert a date cell to 'Feb 2025' format. Normalizes PS hyphen format."""
+    """Convert a date cell to 'Feb 2025' format. Normalizes PS and CS hyphen formats."""
     if isinstance(value, datetime):
         return value.strftime("%b %Y")
     if value is None:
         return ""
     s = str(value).strip()
+    # Normalize CS 2-digit year "Feb-26" -> "Feb 2026"
+    # (century pivot: 2-digit years are assumed to be 20xx — accurate through 2099)
+    m = re.match(r"^([A-Z][a-z]{2})-(\d{2})$", s)
+    if m:
+        return f"{m.group(1)} 20{m.group(2)}"
     # Normalize PS hyphen format "Feb-2025" -> "Feb 2025"
     s = re.sub(r"^([A-Z][a-z]{2})-(\d{4})$", r"\1 \2", s)
     return s
@@ -675,13 +683,168 @@ def extract_ps_rent_roll_occupancy(ws):
 
 
 # ---------------------------------------------------------------------------
+# EXTRACTION FUNCTIONS — CUBESMART (CS)
+# ---------------------------------------------------------------------------
+
+# Sheet name is exact ("Rolling Details"), unlike EXR which uses a prefix+number.
+CS_ROLLING_IS_SHEET       = "Rolling Details"
+CS_ROLLING_IS_START_LABEL = "Rental Income"
+# Stop label: reuse ROLLING_IS_STOP_LABEL = "Net Operating Income".
+# label_matches() uses startswith so it also matches "Net Operating Income (Loss)".
+
+
+def extract_cs_property_number(ws):
+    """
+    Parse the CS property number from cell O1.
+    'O1 = "3534 CUBESMART AR LITTLE ROCK PRATT RD"' -> "3534"
+    Returns empty string if the pattern is not found.
+    """
+    try:
+        val = ws["O1"].value
+        if val:
+            match = re.match(r"(\d+)", str(val).strip())
+            if match:
+                return match.group(1)
+    except Exception:
+        pass
+    return ""
+
+
+def extract_cs_rolling_is(ws):
+    """
+    Extract the CS income statement from the Rolling Details sheet.
+
+    CS-specific behaviour:
+      - Dates formatted 'Feb-26' (2-digit year) — normalised to 'Feb 2026' by format_date()
+      - '12 Month Total' column sits immediately after the last month — excluded
+        automatically because the header string doesn't pass is_date_value()
+      - Labels in column B (same as PS)
+      - Extraction stops (inclusive) at 'Net Operating Income (Loss)'
+      - After extraction, any month column whose NOI value is 0 or None is dropped
+        from both the dates list and every row's values list. This removes empty
+        future months in a rolling 12-month view.
+
+    Returns (dates, rows) or (None, None).
+    """
+    all_rows = []
+    for row in ws.iter_rows(values_only=False):
+        all_rows.append([c.value for c in row])
+
+    if not all_rows:
+        return None, None
+
+    # Find the date header row — same algorithm as extract_rolling_is()
+    date_row_idx   = None
+    date_start_col = None
+    dates          = []
+
+    for idx, row in enumerate(all_rows):
+        date_count     = 0
+        first_date_col = None
+        for col_idx, val in enumerate(row):
+            if is_date_value(val):
+                date_count += 1
+                if first_date_col is None:
+                    first_date_col = col_idx
+        if date_count >= 5:
+            date_row_idx   = idx
+            date_start_col = first_date_col
+            for col_idx in range(first_date_col, len(row)):
+                val = row[col_idx]
+                if is_date_value(val):
+                    dates.append(format_date(val))
+                elif val is None:
+                    break
+                else:
+                    break  # non-date (e.g. "12 Month Total") ends the date walk
+            break
+
+    if date_row_idx is None:
+        return None, None
+
+    # Find the label column and the start row ("Rental Income")
+    label_col     = None
+    start_row_idx = None
+    for idx in range(date_row_idx + 1, min(date_row_idx + 30, len(all_rows))):
+        row = all_rows[idx]
+        for col_idx in range(min(5, len(row))):
+            if label_matches(row[col_idx], CS_ROLLING_IS_START_LABEL):
+                label_col     = col_idx
+                start_row_idx = idx
+                break
+        if label_col is not None:
+            break
+
+    if label_col is None:
+        return dates, None
+
+    # Collect rows through "Net Operating Income (Loss)" (inclusive)
+    extracted_rows = []
+    num_date_cols  = len(dates)
+
+    for idx in range(start_row_idx, len(all_rows)):
+        row       = all_rows[idx]
+        label_val = row[label_col] if label_col < len(row) else None
+
+        if label_val is None or str(label_val).strip() == "":
+            continue
+
+        label_text = str(label_val).strip()
+
+        values = []
+        for d in range(num_date_cols):
+            col = date_start_col + d
+            val = row[col] if col < len(row) else None
+            values.append(val)
+
+        # Existing per-value zero check: a row stays in if ANY value is non-zero.
+        # This correctly keeps rows like "Property Taxes" where monthly values
+        # offset to a zero sum but individual months carry data.
+        if not is_zero_row(values):
+            extracted_rows.append({"label": label_text, "values": values})
+
+        if label_matches(label_text, ROLLING_IS_STOP_LABEL):
+            break
+
+    # -----------------------------------------------------------------------
+    # CS-specific: drop month columns where NOI is 0 or None.
+    # CubeSmart shows a rolling 12-month view; unused future months have NOI = 0
+    # and should be excluded entirely from both the dates list and each row.
+    # -----------------------------------------------------------------------
+    noi_row = None
+    for r in extracted_rows:
+        if label_matches(r["label"], ROLLING_IS_STOP_LABEL):
+            noi_row = r
+            break
+
+    if noi_row is not None:
+        keep_cols = []
+        for i, val in enumerate(noi_row["values"]):
+            if val is None:
+                continue
+            try:
+                if float(val) != 0:
+                    keep_cols.append(i)
+            except (ValueError, TypeError):
+                # Non-numeric NOI cell — unexpected, but keep the column rather than silently drop it
+                keep_cols.append(i)
+
+        if len(keep_cols) < len(dates):
+            dates = [dates[i] for i in keep_cols]
+            for r in extracted_rows:
+                r["values"] = [r["values"][i] for i in keep_cols]
+
+    return dates, extracted_rows
+
+
+# ---------------------------------------------------------------------------
 # CORE PROCESSING FUNCTION — ROUTES BY MANAGED_BY
 #
 # This is the main function that both the CLI script and the webapp call.
 # It takes a filepath and property_name, returns (output_bytes, filename, log).
 # It does NOT print anything or prompt for input.
-# Branches: "Public Storage" → PS extractors, else → EXR extractors.
-# CubeSmart: stub — not yet implemented (falls through to EXR branch).
+# Branches: "Public Storage" → PS extractors, "CubeSmart" → CS extractors,
+#           else → EXR extractors.
 # Other: uses EXR extraction, skips COA mapping.
 # ---------------------------------------------------------------------------
 
@@ -772,10 +935,44 @@ def process_workbook(filepath, property_name, managed_by="Extra"):
         log.append({"sheet": "Rent Roll detail", "status": "SKIP",
                     "message": "PS Rent Roll does not include rates or move-in dates"})
 
+    elif managed_by == "CubeSmart":
+        # ---------------------------------------------------------------
+        # CUBESMART (CS) branch — Rolling Details sheet only (first pass).
+        # Unit Rate / Ops Sum / Rent Roll not yet mapped for CS.
+        # ---------------------------------------------------------------
+
+        # Rolling Details — sheet named exactly "Rolling Details"
+        ws = wb[CS_ROLLING_IS_SHEET] if CS_ROLLING_IS_SHEET in wb.sheetnames else None
+        if ws is None:
+            log.append({"sheet": CS_ROLLING_IS_SHEET, "status": "WARNING",
+                         "message": f"{CS_ROLLING_IS_SHEET} sheet not found"})
+        else:
+            prop_num = extract_cs_property_number(ws)
+            dates, rows = extract_cs_rolling_is(ws)
+            if dates is None:
+                log.append({"sheet": CS_ROLLING_IS_SHEET, "status": "WARNING",
+                             "message": "Could not find date header row"})
+            elif rows is None:
+                log.append({"sheet": CS_ROLLING_IS_SHEET, "status": "WARNING",
+                             "message": f"Could not find '{CS_ROLLING_IS_START_LABEL}' label"})
+            else:
+                rolling_is_data = {"prop_num": prop_num, "dates": dates, "rows": rows}
+                msg = f"Extracted {len(rows)} line items x {len(dates)} months"
+                log.append({"sheet": CS_ROLLING_IS_SHEET, "status": "OK", "message": msg})
+                summary["rolling_is"] = msg
+
+        # Other tabs not yet implemented for CubeSmart
+        log.append({"sheet": "Unit Rate", "status": "SKIP",
+                    "message": "Not yet implemented for CubeSmart"})
+        log.append({"sheet": "Ops Sum",   "status": "SKIP",
+                    "message": "Not yet implemented for CubeSmart"})
+        log.append({"sheet": "Rent Roll", "status": "SKIP",
+                    "message": "Not yet implemented for CubeSmart"})
+
     else:
         # ---------------------------------------------------------------
-        # EXTRA SPACE (EXR) branch (also used by CubeSmart / Other until
-        # those formats get their own extraction logic)
+        # EXTRA SPACE (EXR) branch (also used by "Other" until that format
+        # gets its own extraction logic)
         # ---------------------------------------------------------------
 
         # Rolling IS
